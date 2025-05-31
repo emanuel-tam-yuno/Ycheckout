@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen" />
+  <title>Yunique Fashion Store</title>
+</head>
+
+<body>
+  <!-- Container da Logo -->
+  <div class="logo-container">
+    <img
+      src="https://images.squarespace-cdn.com/content/v1/5808c81c9de4bb88feeecbce/1478021079673-MWEGGWJL9A8XCA4R2V11/logo-png-875x375.png?format=1500w"
+      alt="Logo da Yunique Fashion Store">
+  </div>
+  <h1>Hi, Emanuel</h1>
+  <h2>Finish your order</h2>
+  <table border="3">
+    <tr>
+      <td><b>Product</b></td>
+      <td><b>Quantity</b></td>
+      <td><b>Currency</b></td>
+      <td><b>Total</b></td>
+    </tr>
+    <tr>
+      <td>Sweatshirt Set Fashion Week 2024 - Nike</td>
+      <td>1</td>
+      <td>USD</td>
+      <td>1500</td>
+    </tr>
+  </table>
+  <h3>Select the payment method and click continue</h3>
+  <!-- Renderizador de Checkout -->
+  <div id="checkout-container"></div>
+
+
+  <!-- Botão que irá iniciar o processo de pagamento -->
+  <button id="button-pay">Continue</button>
+
+  <!-- SDK da Yuno -->
+  <script src="https://sdk-web.y.uno/v1/static/js/main.min.js"></script>
+
+  <script type="module">
+    // Chave Pública da Yuno
+    const PUBLIC_API_KEY =  "sandbox_gAAAAABm10Us3Xk9Js1T1d8iRV7PgoOQDF_7UzWsPB1-FKlPOuldSv6UExVM8rm41F2mgrU4wb4IMZy-hNJtI4bXTqQNT6PhFcsTYTjWD4xBsx3uN2VIruLVFiOnPjQF_FCVmBUpfiwWXn7c9cpyz_ecZ3CjdVboBQc4vitnp4I4ngeeYgpDa2gmJFd6Zqd0FpLdGi9G-aytlJ-hLG3SWBpuQ9pD9_Vr6m_S0_rnABehRjN8MoYUx3cm1OPkrEuph_7Nmgx_4zWb";
+
+    // Inicialização da SDK
+    const yuno = Yuno.initialize(PUBLIC_API_KEY);
+
+    // Montagem do checkout
+    yuno.mountCheckout({
+      // vaultedToken: '1f9c8a3e-1bc8-44a2-9862-1d78a3afa888',
+      elementSelector: '#checkout-container'
+    });
+
+    // Início do processo de checkout após a montagem
+    yuno.startCheckout({
+      card: {
+        type: "extends",
+        styles: '',
+        cardSaveEnable: true,
+        texts: {},
+        isCreditCardProcessingOnly: true,
+      },
+      elementSelector: '#checkout-container',
+      checkoutSession: '235d8877-0efe-46f8-8376-cd0ebb28a61b', // Session Checkout gerado no Back-end (etapa 2)
+      countryCode: 'BR',
+      language: 'pt',
+      onLoading: (args) => {
+        console.log('Carregando:', args);
+      },
+      yunoCreatePayment: (oneTimeToken, cardData) => {
+        // Captura e exibição do OTT que será usado no Back-end (etapa 3)
+        console.log('OTT gerado:', oneTimeToken);
+
+        // Exibindo o objeto completo de cardData retornado pela SDK
+        console.log('Card Data:', cardData);
+        console.log('Card Data (formatado):', JSON.stringify(cardData, null, 2));
+      },
+    });
+
+    // Inicie o processo de pagamento ao clicar no botão
+    const PayButton = document.querySelector('#button-pay');
+    PayButton.addEventListener('click', () => {
+      yuno.startPayment();
+    });
+  </script>
+</body>
+
+</html>
