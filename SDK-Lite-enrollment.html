@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Yuno SDK Lite com carregamento recomendado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #yuno-container {
+      margin-top: 30px;
+    }
+    .yuno-status { display: none; }
+  </style>
+</head>
+<body>
+
+  <h1>Cadastro de Cartão com Yuno</h1>
+  <div id="yuno-container"></div>
+
+  <!-- 1. Defina o ouvinte ANTES de carregar o SDK -->
+  <script>
+    window.addEventListener('yuno-sdk-ready', async () => {
+      console.log('✅ SDK carregado e pronto para uso');
+
+      const yuno = await Yuno.initialize('sandbox_gAAAAABm10Us3Xk9Js1T1d8iRV7PgoOQDF_7UzWsPB1-FKlPOuldSv6UExVM8rm41F2mgrU4wb4IMZy-hNJtI4bXTqQNT6PhFcsTYTjWD4xBsx3uN2VIruLVFiOnPjQF_FCVmBUpfiwWXn7c9cpyz_ecZ3CjdVboBQc4vitnp4I4ngeeYgpDa2gmJFd6Zqd0FpLdGi9G-aytlJ-hLG3SWBpuQ9pD9_Vr6m_S0_rnABehRjN8MoYUx3cm1OPkrEuph_7Nmgx_4zWb'); // substitua pela sua chave
+
+      yuno.mountEnrollmentLite({
+        customerSession: '0f3a3106-0634-4c52-bc40-e210b96271d9', // substitua
+        countryCode: 'BR',
+        language: 'pt',
+        showLoading: false,
+    
+
+        onLoading: (args) => {
+          console.log("⏳ Carregando:", args);
+        },
+
+        card: {
+          type: 'extends',
+          cardSaveEnable: true,
+          documentEnable: false,
+          isCreditCardProcessingOnly: true,
+    
+          styles: `
+            @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+            .Yuno-front-side-card__name-label {
+              color: #2a4365 !important;
+              font-family: 'Roboto', sans-serif !important;
+            }
+          `,
+          texts: {
+            cardForm: {
+              enrollmentSubmitButton: 'Salvar Cartão',
+              paymentSubmitButton: 'Pagar Agora'
+            },
+            cardStepper: {
+              numberCardStep: { nextButton: 'Próximo' },
+              cardHolderNameStep: { prevButton: 'Voltar', nextButton: 'Continuar' },
+              expirationDateStep: { prevButton: 'Voltar', nextButton: 'Próximo' },
+              cvvStep: { prevButton: 'Voltar', nextButton: 'Finalizar' }
+            }
+          }
+        },
+
+        yunoEnrollmentStatus: ({ status, vaultedToken }) => {
+          console.log('📦 Status:', status);
+          console.log('🔐 VaultedToken:', vaultedToken);
+        },
+
+        yunoError: (error) => {
+          console.error('❌ Erro no SDK:', error);
+        }
+      });
+
+      
+    });
+  </script>
+
+  <!-- 2. Carregue o SDK após configurar o ouvinte -->
+  <script defer src="https://sdk-web.y.uno/v1.1/main.js"></script>
+
+</body>
+</html>

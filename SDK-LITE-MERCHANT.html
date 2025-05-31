@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen" />
+  <title>Yunique Fashion Store</title>
+  <style>
+    /* Estilos para o popup */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    .popup-content h3 {
+      margin: 0;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .popup-content p {
+      margin: 10px 0;
+    }
+
+    .popup-content button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="logo-container">
+    <img src="https://images.squarespace-cdn.com/content/v1/5808c81c9de4bb88feeecbce/1478021079673-MWEGGWJL9A8XCA4R2V11/logo-png-875x375.png?format=1500w"
+      alt="Logo da Yunique Fashion Store">
+  </div>
+  <h1>Hi, Emanuel</h1>
+  <h2>Finish your order</h2>
+  <table border="3">
+    <tr>
+      <td><b>Product</b></td>
+      <td><b>Quantity</b></td>
+      <td><b>Currency</b></td>
+      <td><b>Total</b></td>
+    </tr>
+    <tr>
+      <td>Sweatshirt Set Fashion Week 2024 - Nike</td>
+      <td>1</td>
+      <td>USD</td>
+      <td>1500</td>
+    </tr>
+  </table>
+  <h3>Select the payment method and click continue</h3>
+  <div id="checkout-container"></div>
+  <button id="button-pay">Continue</button>
+
+  <!-- Elemento para exibir o OTT -->
+  <div id="ott-display" style="margin-top: 20px; font-size: 16px; color: green; font-weight: bold;"></div>
+
+  <script src="https://sdk-web.y.uno/v1/static/js/main.min.js"></script>
+
+  <script type="module">
+    const PUBLIC_API_KEY = "prod_gAAAAABnBTrUj9PIMbfwc7evGhiDKjtSH7YV5tmXsEJcDWCRNKHylAkNrjdvYH1olkDD1eJ5ovHwJXuYuLk-X2TfJ2sp0ihH7a7KpPuFt1lSYQ3aAdn-sCrk3Pxq1wN8GER77UehFTVI6asTi1yNGgMTNLU1jGlSX8KypamhHg4Ywsrm9VZhxhqVeHsKZ98KFjU7ZeMw1jKkFeEcdJsOHkomp2VlMq6LV9mFWPzOHqOC7N8loyVRJ4yMRnJWmaFDEotaJILyy6j2";
+
+    const yuno = Yuno.initialize(PUBLIC_API_KEY);
+
+    yuno.startCheckout({
+      elementSelector: '#checkout-container',
+      checkoutSession: '1a2feb36-f118-4232-8a16-42850697e390',
+      countryCode: 'BR',
+      language: 'en',
+      showLoading: true,
+      issuersFormEnable: true,
+      showPaymentStatus: true,
+      onLoading: (args) => {
+        console.log('Carregando:', args);
+      },
+      yunoCreatePayment: async (oneTimeToken, tokenWithInformation) => {
+        try {
+          const ottDisplay = document.querySelector('#ott-display');
+          ottDisplay.textContent = `OTT gerado: ${oneTimeToken}`;
+          console.log('OTT gerado:', oneTimeToken);
+
+          // Delay de 30 segundos antes de continuar o pagamento
+          setTimeout(async () => {
+            try {
+              await yuno.continuePayment({ showPaymentStatus: true });
+              console.log('Pagamento Continuado!');
+            } catch (error) {
+              console.error('Erro ao continuar o pagamento após o delay:', error);
+            }
+          }, 30000); // 30 segundos
+          
+        } catch (error) {
+          console.error('Erro ao gerar OTT:', error);
+        }
+      }
+    });
+
+    yuno.mountCheckoutLite({
+      paymentMethodType: 'PIX',
+      elementSelector: '#checkout-container',
+      yunoPaymentResult(data) {
+        // Criação do popup
+        const overlay = document.createElement('div');
+        overlay.className = 'popup-overlay';
+        overlay.innerHTML = `
+          <div class="popup-content">
+            <h3>Payment Result</h3>
+            <p>Status: ${data?.status || 'Unknown'}</p>
+            <p>Message: ${data?.message || 'No additional information'}</p>
+            <button id="close-popup">Close</button>
+          </div>
+        `;
+
+        // Adiciona o popup ao DOM
+        document.body.appendChild(overlay);
+
+        // Evento para fechar o popup
+        document.querySelector('#close-popup').addEventListener('click', () => {
+          document.body.removeChild(overlay);
+        });
+      }
+    });
+
+    const payButton = document.querySelector('#button-pay');
+    payButton.addEventListener('click', async () => {
+      try {
+        console.log('Iniciando pagamento...');
+        await yuno.startPayment();
+        console.log('Pagamento iniciado com sucesso!');
+      } catch (error) {
+        console.error('Erro ao iniciar o pagamento:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>

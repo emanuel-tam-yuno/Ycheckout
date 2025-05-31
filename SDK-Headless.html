@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuno Headless SDK Integration</title>
+</head>
+<body>
+
+    <h1>Exemplo de Integração com o Headless SDK da Yuno</h1>
+
+    <p>Verifique o console para o resultado do OTT gerado ou mensagens de erro.</p>
+
+    <!-- Incluindo o script do Yuno SDK -->
+    <script src="https://sdk-web.y.uno/v1/static/js/main.min.js"></script>
+
+    <script>
+        // Inicialize o SDK Yuno com a PUBLIC_API_KEY
+        const yuno = Yuno.initialize("sandbox_gAAAAABm10Us3Xk9Js1T1d8iRV7PgoOQDF_7UzWsPB1-FKlPOuldSv6UExVM8rm41F2mgrU4wb4IMZy-hNJtI4bXTqQNT6PhFcsTYTjWD4xBsx3uN2VIruLVFiOnPjQF_FCVmBUpfiwWXn7c9cpyz_ecZ3CjdVboBQc4vitnp4I4ngeeYgpDa2gmJFd6Zqd0FpLdGi9G-aytlJ-hLG3SWBpuQ9pD9_Vr6m_S0_rnABehRjN8MoYUx3cm1OPkrEuph_7Nmgx_4zWb");
+
+        // Configure a sessão de pagamento com o país e a checkout_session adequados
+        const apiClientPayment = yuno.apiClientPayment({
+            country_code: "US", // Exemplo: "US". Altere conforme necessário.
+            checkout_session: "3dca7fff-36e9-44b0-8eb9-be5de0d5ab6a" // Sessão de checkout válida.
+        });
+
+        // Função para gerar o One-Time Token (OTT)
+        (async function generateOTT() {
+            try {
+                // Gere o OTT usando os dados do cartão
+                const oneTimeToken = await apiClientPayment.generateToken({
+                    checkout_session: "49fef98f-13b0-44ac-a1c0-0484235eccab",
+                    payment_method: {
+                        type: "CARD",
+                        vaulted_token: '0c379c6b-af38-47d9-a1c6-45d2a7203900', // Não estamos usando token protegido neste exemplo
+                        card: {
+                            detail: {
+                                type: "CREDIT" // Pode ser "CREDIT" ou "DEBIT"
+                            }
+                        },
+                        customer: {
+                            // Informações do cliente
+                            name: "Andrea B",
+                            email: "andreab@example.com",
+                        },
+                    }
+                });
+
+                // Exibir o OTT no console
+                console.log("OTT gerado com sucesso:", oneTimeToken);
+
+            } catch (error) {
+                // Captura e exibe os erros no console
+                console.error("Erro ao gerar o OTT:", error);
+            }
+        })();
+    </script>
+
+</body>
+</html>
