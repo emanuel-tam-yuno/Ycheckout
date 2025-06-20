@@ -3,7 +3,7 @@ name: Deploy para Locaweb via FTP
 on:
   push:
     branches:
-      - main  # ou outra branch que deseje monitorar
+      - main
 
 jobs:
   deploy:
@@ -15,8 +15,8 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
           server-dir: /home/tambr1/public_html/
-          local-dir: "."
+          local-dir: .
