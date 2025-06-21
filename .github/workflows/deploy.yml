@@ -16,7 +16,7 @@ jobs:
       - name: Deploy via Locaweb FTP
         uses: locaweb/ftp-deploy@1.0.0
         with:
-          host: ${{ secrets.HOST }}
-          user: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
+          host: 'ftp.tambr.com.br'
+          user: 'tambr1'  
+          password: 'u4emsxF6K2PWTm!'
           localDir: .
