@@ -20,4 +20,3 @@ jobs:
           user: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           localDir: .
-          remoteDir: /home/tambr1/public_html/
